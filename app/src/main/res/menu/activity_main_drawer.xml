@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_rotate_object"
+            android:icon="@drawable/ic_menu_object"
+            android:title="Rotate object" />
+        <item
+            android:id="@+id/nav_rotate_light"
+            android:icon="@drawable/ic_menu_light"
+            android:title="Rotate light" />
+        <item
+            android:id="@+id/nav_light_strength"
+            android:icon="@drawable/ic_menu_strength"
+            android:title="Change light strength" />
+    </group>
+
+    <item android:title="Change light color">
+        <menu>
+            <item
+                android:id="@+id/nav_color_white"
+                android:icon="@drawable/ic_menu_white"
+                android:title="White" />
+            <item
+                android:id="@+id/nav_color_red"
+                android:icon="@drawable/ic_menu_red"
+                android:title="Red" />
+        </menu>
+    </item>
+
+</menu>

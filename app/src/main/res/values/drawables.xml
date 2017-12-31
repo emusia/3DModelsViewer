@@ -1,0 +1,8 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <item name="ic_menu_object" type="drawable">@android:drawable/ic_menu_rotate </item>
+    <item name="ic_menu_light" type="drawable">@android:drawable/ic_menu_rotate </item>
+    <item name="ic_menu_strength" type="drawable">@android:drawable/btn_star </item>
+    <item name="ic_menu_white" type="drawable">@drawable/white </item>
+    <item name="ic_menu_red" type="drawable">@drawable/red </item>
+    <item name="ic_menu_send" type="drawable">@android:drawable/ic_menu_send</item>
+</resources>
