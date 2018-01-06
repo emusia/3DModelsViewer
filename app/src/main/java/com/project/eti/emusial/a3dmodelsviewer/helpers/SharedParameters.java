@@ -10,7 +10,7 @@ public class SharedParameters {
 
     // We are setting rotating object as default
     private static String mAction = "rotate_object";
-    private static int mTexture = R.drawable.lava;
+    private static int mTexture = R.drawable.wood;
     private static int mLightStrength = 50;
 
     // Light color is white as default

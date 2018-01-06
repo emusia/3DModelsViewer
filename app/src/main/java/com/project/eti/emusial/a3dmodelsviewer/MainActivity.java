@@ -1,31 +1,20 @@
 package com.project.eti.emusial.a3dmodelsviewer;
 
-import android.app.Application;
 import android.os.Bundle;
-import android.os.Environment;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.SeekBar;
 
-import com.project.eti.emusial.a3dmodelsviewer.helpers.FileDialog;
-import com.project.eti.emusial.a3dmodelsviewer.helpers.ParseFile;
 import com.project.eti.emusial.a3dmodelsviewer.helpers.SharedParameters;
-
-import java.io.File;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -34,7 +23,6 @@ public class MainActivity extends AppCompatActivity
     protected SeekBar seekBar;
     protected ViewGroup parent;
     protected int viewIndex;
-    protected String fileName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,14 +41,11 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        // Default file (could not get better solution for now...
-        String file = "/storage/emulated/0/3DModelViewer/Pyramid.txt";
-
         View tempView = findViewById(R.id.tempView);
         parent = (ViewGroup) tempView.getParent();
         viewIndex = parent.indexOfChild(tempView);
         parent.removeView(tempView);
-        glSurfaceView = new OGLSurfaceView(this, file);
+        glSurfaceView = new OGLSurfaceView(this);
         parent.addView(glSurfaceView, viewIndex);
 
         seekBar = (SeekBar) findViewById(R.id.seekBar);
@@ -69,7 +54,6 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 light_strength = (seekBar.getProgress() + 20) / 20;
-                //SharedParameters.setLightStrength(light_strength);
                 Log.d("STRENGTH", Integer.toString(light_strength));
 
                 float[] color = new float[]{ light_strength, light_strength, light_strength, 1 };
@@ -87,42 +71,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        /*
-        LinearLayout linearLayout = new LinearLayout(this);
-
-        Button rotateObject = new Button(this);
-        rotateObject.setText("Rotate object");
-        linearLayout.addView(rotateObject);
-        linearLayout.setGravity(Gravity.LEFT | Gravity.BOTTOM);
-
-        Button rotateLight = new Button(this);
-        rotateLight.setText("Rotate light");
-        linearLayout.addView(rotateLight);
-        linearLayout.setGravity(Gravity.RIGHT | Gravity.BOTTOM);
-
-        this.addContentView(linearLayout,
-                new DrawerLayout.LayoutParams(DrawerLayout.LayoutParams.WRAP_CONTENT, DrawerLayout.LayoutParams.WRAP_CONTENT));
-
-        rotateObject.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!sharedParameters.getObjectButton()) {
-                    sharedParameters.setObjectButton(true);
-                    sharedParameters.setLightButton(false);
-                }
-            }
-        });
-
-        rotateLight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!sharedParameters.getLightButton()) {
-                    sharedParameters.setLightButton(true);
-                    sharedParameters.setObjectButton(false);
-                }
-            }
-        });
-        */
     }
     @Override
     public void onBackPressed() {
@@ -136,37 +84,20 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
-    public void ChooseMeshFile() {
-        FileDialog fileDialog;
-        File mPath = new File(Environment.getExternalStorageDirectory() + "//DIR//");
-        fileDialog = new FileDialog(this, mPath, ".txt");
-        fileDialog.addFileListener(new FileDialog.FileSelectedListener() {
-            public void fileSelected(File file) {
-                fileName = file.toString();
-                Log.d(getClass().getName(), "selected file " + file.toString());
-                parent.removeView(glSurfaceView);
-                glSurfaceView = new OGLSurfaceView(getApplicationContext(), file.toString());
-                parent.addView(glSurfaceView, viewIndex);
-            }
-        });
-        fileDialog.showDialog();
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_load_file) {
-            ChooseMeshFile();
+
+            parent.removeView(glSurfaceView);
+            glSurfaceView = new OGLSurfaceView(MainActivity.this);
+            parent.addView(glSurfaceView, viewIndex);
+
             return true;
 
         } else if (id == R.id.action_exit) {
@@ -178,7 +109,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
         String action = null;
         SharedParameters sharedParameters = new SharedParameters();
@@ -198,30 +128,30 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_color_white) {
             float[] white = new float[]{ 1, 1, 1, 1 };
-            action = sharedParameters.getAction();
-            sharedParameters.setLightColor(white);
+            action = SharedParameters.getAction();
+            SharedParameters.setLightColor(white);
 
         } else if (id == R.id.nav_color_red) {
             float[] red = new float[]{ 1, 0, 0, 1 };
-            action = sharedParameters.getAction();
-            sharedParameters.setLightColor(red);
+            action = SharedParameters.getAction();
+            SharedParameters.setLightColor(red);
 
         } else if (id == R.id.nav_tex_wood) {
-            action = sharedParameters.getAction();
-            sharedParameters.setTexture(R.drawable.wood);
+            action = SharedParameters.getAction();
+            SharedParameters.setTexture(R.drawable.wood);
 
         } else if (id == R.id.nav_tex_bamboo) {
-            action = sharedParameters.getAction();
-            sharedParameters.setTexture(R.drawable.bamboo_curtain);
+            action = SharedParameters.getAction();
+            SharedParameters.setTexture(R.drawable.bamboo_curtain);
 
         } else if (id == R.id.nav_tex_lava) {
-            action = sharedParameters.getAction();
-            sharedParameters.setTexture(R.drawable.lava);
+            action = SharedParameters.getAction();
+            SharedParameters.setTexture(R.drawable.lava);
 
         }
 
         Log.d("ACTION", action);
-        sharedParameters.setAction(action);
+        SharedParameters.setAction(action);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

@@ -2,9 +2,7 @@ package com.project.eti.emusial.a3dmodelsviewer;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
-import android.util.Log;
 import android.view.MotionEvent;
-import android.widget.Button;
 
 import com.project.eti.emusial.a3dmodelsviewer.helpers.SharedParameters;
 
@@ -16,16 +14,13 @@ class OGLSurfaceView extends GLSurfaceView
     private float mPreviousX;
     private float mPreviousY;
 
-    public OGLSurfaceView(Context context, String file)
+    public OGLSurfaceView(Context context)
     {
         super(context);
 
-        // Kontekst OpenGL ES 2.0.
         setEGLContextClientVersion(2);
 
-        // Przypisanie renderera do widoku.
-        Log.d("OGLSurfaceView", file);
-        renderer = new OGLRenderer(file);
+        renderer = new OGLRenderer(context);
         renderer.setContext(getContext());
         setRenderer(renderer);
     }
@@ -35,6 +30,11 @@ class OGLSurfaceView extends GLSurfaceView
         float x = e.getX();
         float y = e.getY();
         float[] position = SharedParameters.getLightPosition();
+
+        float lightX = position[0];
+        float lightY = position[1];
+        float lightZ = position[2];
+
         switch (e.getAction()) {
             case MotionEvent.ACTION_MOVE:
                 float dx = x - mPreviousX;
@@ -51,24 +51,30 @@ class OGLSurfaceView extends GLSurfaceView
                 if (SharedParameters.getAction() == "rotate_object") {
                     renderer.mObjectAngleX += dx * TOUCH_SCALE_FACTOR;
                     renderer.mObjectAngleY += dy * TOUCH_SCALE_FACTOR;
+
                 } else if (SharedParameters.getAction() == "rotate_light") {
-                    // position = new float[] {, 1};
+                    lightX += (dx / 50.0f);
+                    lightY -= (dy / 50.0f);
+
+                    lightX = (lightX > 4.0f) ? 4.0f : lightX;
+                    lightX = (lightX < -4.0f) ? -4.0f : lightX;
+
+                    lightY = (lightY > 4.0f) ? 4.0f : lightY;
+                    lightY = (lightY < -4.0f) ? -4.0f : lightY;
+
+                    position[0] = lightX;
+                    position[1] = lightY;
+                    position[2] = lightZ;
+
                     SharedParameters.setLightPosition(position);
-                    Log.d("POSITION", Float.toString(position[0]) + ", " + Float.toString(position[1]) + ", " + Float.toString(position[2]));
                 }
-
                 requestRender();
-
         }
 
         mPreviousX = x;
         mPreviousY = y;
-        return true;
 
+        return true;
     }
     
-    public OGLRenderer getRenderer()
-    {
-    	return renderer;
-    }
 }

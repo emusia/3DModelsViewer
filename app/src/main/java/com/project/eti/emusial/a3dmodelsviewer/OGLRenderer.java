@@ -9,14 +9,14 @@ import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.project.eti.emusial.a3dmodelsviewer.helpers.SharedParameters;
+import com.project.eti.emusial.a3dmodelsviewer.meshes.ObjectMesh;
+import com.project.eti.emusial.a3dmodelsviewer.shaders.ShaderProgram;
+
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-
-import com.project.eti.emusial.a3dmodelsviewer.helpers.SharedParameters;
-import com.project.eti.emusial.a3dmodelsviewer.meshes.ObjectMesh;
-import com.project.eti.emusial.a3dmodelsviewer.shaders.ShaderProgram;
 
 public class OGLRenderer implements GLSurfaceView.Renderer
 {
@@ -24,51 +24,38 @@ public class OGLRenderer implements GLSurfaceView.Renderer
     public volatile float mObjectAngleX = 0;
     public volatile float mObjectAngleY = 0;
 
-    //protected  float rotation = 0;
-    // Macierze modelu, widoku i projekcji.
     protected float[] modelMatrix = new float[16];
     protected float[] viewMatrix = new float[16];
     protected float[] projectionMatrix = new float[16];
 
-    // Iloczyn macierzy modelu, widoku i projekcji.
     protected float[] MVPMatrix = new float[16];
     protected float[] MVMatrix = new float[16];
 
 
-    // Informacja o tym, z ilu elementów składają się poszczególne atrybuty.
     protected final int POSITION_DATA_SIZE = 3;
     protected final int COLOUR_DATA_SIZE = 4;
     protected final int NORMAL_DATA_SIZE = 3;
     protected final int TEXCOORD_DATA_SIZE = 2;
 
-    // Wartości wykorzystywane przez naszą kamerę. Pierwsze trzy elementy opisują położenie obserwatora,
-    // kolejne trzy wskazują na punkt, na który on patrzy, a ostatnie wartości definiują, w którym kierunku
-    // jest "góra" (tzw. "up vector").
     protected float[] camera;
 
     protected ShaderProgram colShaders;
     protected ShaderProgram texShaders;
 
-    // Kontekst aplikacji.
     protected Context appContext = null;
 
-    // Modele obiektów.
-    //protected TexturedCubeMesh texturedCubeMesh;
     protected ObjectMesh objectMesh;
 
-    // Adresy tekstur w pamięci modułu graficznego.
     protected int textureDataHandle;
     protected int textureIndex;
 
-
-    public OGLRenderer(String file)
+    public OGLRenderer(Context context)
     {
         camera = new float[]{0.f, 0.f, 1.5f, // pozycja obserwatora
                              0.f, 0.f, 0.f,  // punkt na który obserwator patrzy
                              0.f, 1.f, 0.f}; // "up vector"
 
-        Log.d("OGLRenderer", file);
-        objectMesh = new ObjectMesh(file);
+        objectMesh = new ObjectMesh(context);
     }
 
     @Override
@@ -120,7 +107,6 @@ public class OGLRenderer implements GLSurfaceView.Renderer
         final float left = ratio * bottom;
         final float right = ratio * top;
         Matrix.frustumM(projectionMatrix, 0, left, right, bottom, top, near, far);
-
     }
 
     @Override
@@ -153,7 +139,6 @@ public class OGLRenderer implements GLSurfaceView.Renderer
         Matrix.rotateM(modelMatrix, 0, modelMatrix, 0, mObjectAngleY, 1.0f, 0.0f, 0.0f);
         drawShape(objectMesh.getPositionBuffer(), null, objectMesh.getNormalBuffer(), objectMesh.getTexCoordsBuffer(),
                     texShaders, objectMesh.getNumberOfVertices());
-
     }
 
     protected void drawShape(final FloatBuffer positionBuffer, final FloatBuffer colourBuffer, final FloatBuffer normalBuffer, final FloatBuffer texCoordsBuffer,

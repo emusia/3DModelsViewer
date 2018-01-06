@@ -1,15 +1,11 @@
 package com.project.eti.emusial.a3dmodelsviewer.helpers;
 
-import android.content.Context;
-import android.hardware.camera2.params.StreamConfigurationMap;
-import android.util.FloatProperty;
 import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
