@@ -34,14 +34,7 @@ public class OGLRenderer implements GLSurfaceView.Renderer
     // Iloczyn macierzy modelu, widoku i projekcji.
     protected float[] MVPMatrix = new float[16];
     protected float[] MVMatrix = new float[16];
-    /* Light color is white as default
-    protected float[] lightColour = new float[]{
-            1, 1, 1, 1
-    };
-    */
-    protected float[] lightPosition = new float[]{
-            0, 2, 1
-    };
+
 
     // Informacja o tym, z ilu elementów składają się poszczególne atrybuty.
     protected final int POSITION_DATA_SIZE = 3;
@@ -61,12 +54,11 @@ public class OGLRenderer implements GLSurfaceView.Renderer
     protected Context appContext = null;
 
     // Modele obiektów.
-    protected CubeMesh cubeMesh;
-    // protected CubeMesh secondCubeMesh;
     protected TexturedCubeMesh texturedCubeMesh;
 
     // Adresy tekstur w pamięci modułu graficznego.
-    protected int crateTextureDataHandle;
+    protected int textureDataHandle;
+    protected int textureIndex;
 
 
     public OGLRenderer()
@@ -75,8 +67,6 @@ public class OGLRenderer implements GLSurfaceView.Renderer
                              0.f, 0.f, 0.f,  // punkt na który obserwator patrzy
                              0.f, 1.f, 0.f}; // "up vector"
 
-        cubeMesh = new CubeMesh();
-        // secondCubeMesh = new CubeMesh();
         texturedCubeMesh = new TexturedCubeMesh();
     }
 
@@ -96,7 +86,8 @@ public class OGLRenderer implements GLSurfaceView.Renderer
         GLES20.glDepthMask(true);
 
         // Wczytanie tekstur do pamięci.
-        crateTextureDataHandle = readTexture(R.drawable.crate_borysses_deviantart_com);
+        textureIndex = SharedParameters.getTexture();
+        textureDataHandle = readTexture(textureIndex);
 
         // Utworzenie shaderów korzystających z kolorów wierzchołków.
         colShaders = new ShaderProgram();
@@ -128,6 +119,7 @@ public class OGLRenderer implements GLSurfaceView.Renderer
         final float left = ratio * bottom;
         final float right = ratio * top;
         Matrix.frustumM(projectionMatrix, 0, left, right, bottom, top, near, far);
+
     }
 
     @Override
@@ -144,7 +136,15 @@ public class OGLRenderer implements GLSurfaceView.Renderer
         // Transformacja i rysowanie brył.
         GLES20.glUseProgram(texShaders.programHandle); // Użycie shaderów korzystających z teksturowania.
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0); // Wykorzystanie tekstury o indeksie 0.
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, crateTextureDataHandle); // Podpięcie tekstury skrzyni.
+
+        // Wczytanie tekstur do pamięci
+        if (textureIndex != SharedParameters.getTexture())
+        {
+            textureIndex = SharedParameters.getTexture();
+            textureDataHandle = readTexture(textureIndex);
+        }
+
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureDataHandle); // Podpięcie tekstury skrzyni.
         GLES20.glUniform1i(texShaders._diffuseTextureHandle, 0); // Przekazanie shaderom indeksu tekstury (0).
         Matrix.setIdentityM(modelMatrix, 0); // Zresetowanie pozycji modelu.
         Matrix.translateM(modelMatrix, 0, 0.f, -0.f, -6.5f); // Przesunięcie modelu.
@@ -205,7 +205,8 @@ public class OGLRenderer implements GLSurfaceView.Renderer
         GLES20.glUniformMatrix4fv(shaderProgram._MVPMatrixHandle, 1, false, MVPMatrix, 0);
         GLES20.glUniformMatrix4fv(shaderProgram._MVMatrixHandle, 1, false, MVMatrix, 0);
 
-        GLES20.glUniform3fv(shaderProgram._LightPosHandle, 1, lightPosition, 0);
+//        Log.d("POSITION", Float.toString(SharedParameters.getLightPosition()[0]) + ", " + Float.toString(SharedParameters.getLightPosition()[1]) + ", " + Float.toString(SharedParameters.getLightPosition()[2]));
+        GLES20.glUniform3fv(shaderProgram._LightPosHandle, 1, SharedParameters.getLightPosition(), 0);
         GLES20.glUniform4fv(shaderProgram._ColourHandle, 1, SharedParameters.getLightColor(), 0);
 
         // Narysowanie obiektu.

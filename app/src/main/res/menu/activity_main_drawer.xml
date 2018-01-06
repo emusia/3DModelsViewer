@@ -28,5 +28,21 @@
                 android:title="Red" />
         </menu>
     </item>
+    <item android:title="Change texture">
+        <menu>
+            <item
+                android:id="@+id/nav_tex_wood"
+                android:icon="@drawable/wood"
+                android:title="Wood" />
+            <item
+                android:id="@+id/nav_tex_lava"
+                android:icon="@drawable/lava"
+                android:title="Lava" />
+            <item
+                android:id="@+id/nav_tex_bamboo"
+                android:icon="@drawable/bamboo_curtain"
+                android:title="Bamboo" />
+        </menu>
+    </item>
 
 </menu>

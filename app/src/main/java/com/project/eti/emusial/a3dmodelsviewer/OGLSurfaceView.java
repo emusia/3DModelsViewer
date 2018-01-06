@@ -33,7 +33,7 @@ class OGLSurfaceView extends GLSurfaceView
     public boolean onTouchEvent(MotionEvent e) {
         float x = e.getX();
         float y = e.getY();
-
+        float[] position = SharedParameters.getLightPosition();
         switch (e.getAction()) {
             case MotionEvent.ACTION_MOVE:
                 float dx = x - mPreviousX;
@@ -50,6 +50,10 @@ class OGLSurfaceView extends GLSurfaceView
                 if (SharedParameters.getAction() == "rotate_object") {
                     renderer.mObjectAngleX += dx * TOUCH_SCALE_FACTOR;
                     renderer.mObjectAngleY += dy * TOUCH_SCALE_FACTOR;
+                } else if (SharedParameters.getAction() == "rotate_light") {
+                    // position = new float[] {, 1};
+                    SharedParameters.setLightPosition(position);
+                    Log.d("POSITION", Float.toString(position[0]) + ", " + Float.toString(position[1]) + ", " + Float.toString(position[2]));
                 }
 
                 requestRender();

@@ -18,14 +18,16 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 
+import com.project.eti.emusial.a3dmodelsviewer.helpers.ParseFile;
 import com.project.eti.emusial.a3dmodelsviewer.helpers.SharedParameters;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
 	protected OGLSurfaceView glSurfaceView;
-    private SharedParameters sharedParameters = new SharedParameters();
+    protected SeekBar seekBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +54,31 @@ public class MainActivity extends AppCompatActivity
         int index = parent.indexOfChild(tempView);
         parent.removeView(tempView);
         parent.addView(glSurfaceView, index);
+
+         seekBar = (SeekBar) findViewById(R.id.seekBar);
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int light_strength = SharedParameters.getLightStrength();
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                light_strength = (seekBar.getProgress() + 20) / 20;
+                //SharedParameters.setLightStrength(light_strength);
+                Log.d("STRENGTH", Integer.toString(light_strength));
+
+                float[] color = new float[]{ light_strength, light_strength, light_strength, 1 };
+                SharedParameters.setAction(SharedParameters.getAction());
+                SharedParameters.setLightColor(color);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
         /*
         LinearLayout linearLayout = new LinearLayout(this);
@@ -116,6 +143,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_load_file) {
+
             return true;
         } else if (id == R.id.action_exit) {
             System.exit(0);
@@ -129,6 +157,8 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         String action = null;
+        SharedParameters sharedParameters = new SharedParameters();
+        seekBar.setVisibility(View.INVISIBLE);
 
         if (id == R.id.nav_rotate_object) {
             action = "rotate_object";
@@ -137,21 +167,36 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_light_strength) {
             action = "light strength";
+            seekBar.setVisibility(View.VISIBLE);
+            if (seekBar.getProgress() == 0) {
+                seekBar.setProgress(20);
+            }
 
         } else if (id == R.id.nav_color_white) {
-            action = "color white";
             float[] white = new float[]{ 1, 1, 1, 1 };
-            SharedParameters.setLightColor(white);
+            action = sharedParameters.getAction();
+            sharedParameters.setLightColor(white);
 
         } else if (id == R.id.nav_color_red) {
-            action = "color red";
             float[] red = new float[]{ 1, 0, 0, 1 };
-            SharedParameters.setLightColor(red);
+            action = sharedParameters.getAction();
+            sharedParameters.setLightColor(red);
+
+        } else if (id == R.id.nav_tex_wood) {
+            action = sharedParameters.getAction();
+            sharedParameters.setTexture(R.drawable.wood);
+
+        } else if (id == R.id.nav_tex_bamboo) {
+            action = sharedParameters.getAction();
+            sharedParameters.setTexture(R.drawable.bamboo_curtain);
+
+        } else if (id == R.id.nav_tex_lava) {
+            action = sharedParameters.getAction();
+            sharedParameters.setTexture(R.drawable.lava);
 
         }
 
         Log.d("ACTION", action);
-        SharedParameters sharedParameters = new SharedParameters();
         sharedParameters.setAction(action);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

@@ -1,10 +1,25 @@
 package com.project.eti.emusial.a3dmodelsviewer.meshes;
 
+import android.content.pm.PackageManager;
+
+import com.project.eti.emusial.a3dmodelsviewer.helpers.ParseFile;
+
 // Klasa reprezentująca kolorową kostkę.
 public class CubeMesh extends BaseMesh
 {
     public CubeMesh()
     {
+        String line = ParseFile.ReadFile();
+        if (line != null) {
+            final float[] positionData =  ParseFile.GetPositionData(line);
+            final float[] normalData = ParseFile.GetNormalData(line);
+            numberOfVertices = (int) ParseFile.GetNumberOfVertices(line);
+
+            positionBuffer = createBuffer(positionData);
+            normalBuffer = createBuffer(normalData);
+        }
+
+        /*
         final float[] positionData = {
             // Przednia ściana
             -1.0f, 1.0f, 1.0f,
@@ -156,9 +171,7 @@ public class CubeMesh extends BaseMesh
         };
 
         numberOfVertices = 36;
+        */
 
-        positionBuffer = createBuffer(positionData);
-        colourBuffer = createBuffer(colourData);
-        normalBuffer = createBuffer(normalData);
     }
 }
