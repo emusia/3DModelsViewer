@@ -1,13 +1,17 @@
 package com.project.eti.emusial.a3dmodelsviewer.meshes;
 
+import android.util.Log;
+
 import com.project.eti.emusial.a3dmodelsviewer.helpers.ParseFile;
 
 // Klasa reprezentująca oteksturowaną skrzynię.
-public class TexturedCubeMesh extends BaseMesh
+public class ObjectMesh extends BaseMesh
 {
-    public TexturedCubeMesh()
+    public ObjectMesh(String file)
     {
-        String line = ParseFile.ReadFile();
+        String line = ParseFile.ReadFile(file);
+        Log.d("OBJECTMESH", line);
+
         if (line != null) {
             final float[] positionData =  ParseFile.GetPositionData(line);
             final float[] normalData = ParseFile.GetNormalData(line);
@@ -18,6 +22,5 @@ public class TexturedCubeMesh extends BaseMesh
             normalBuffer = createBuffer(normalData);
             texCoordsBuffer = createBuffer(texCoordData);
         }
-
     }
 }

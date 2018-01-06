@@ -2,6 +2,7 @@ package com.project.eti.emusial.a3dmodelsviewer;
 
 import android.app.Application;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -20,14 +21,20 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 
+import com.project.eti.emusial.a3dmodelsviewer.helpers.FileDialog;
 import com.project.eti.emusial.a3dmodelsviewer.helpers.ParseFile;
 import com.project.eti.emusial.a3dmodelsviewer.helpers.SharedParameters;
+
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
 	protected OGLSurfaceView glSurfaceView;
     protected SeekBar seekBar;
+    protected ViewGroup parent;
+    protected int viewIndex;
+    protected String fileName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,17 +53,17 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        glSurfaceView = new OGLSurfaceView(this);
-        //setContentView(glSurfaceView);
+        // Default file (could not get better solution for now...
+        String file = "/storage/emulated/0/3DModelViewer/Pyramid.txt";
 
         View tempView = findViewById(R.id.tempView);
-        ViewGroup parent = (ViewGroup) tempView.getParent();
-        int index = parent.indexOfChild(tempView);
+        parent = (ViewGroup) tempView.getParent();
+        viewIndex = parent.indexOfChild(tempView);
         parent.removeView(tempView);
-        parent.addView(glSurfaceView, index);
+        glSurfaceView = new OGLSurfaceView(this, file);
+        parent.addView(glSurfaceView, viewIndex);
 
-         seekBar = (SeekBar) findViewById(R.id.seekBar);
-
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int light_strength = SharedParameters.getLightStrength();
             @Override
@@ -134,6 +141,22 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    public void ChooseMeshFile() {
+        FileDialog fileDialog;
+        File mPath = new File(Environment.getExternalStorageDirectory() + "//DIR//");
+        fileDialog = new FileDialog(this, mPath, ".txt");
+        fileDialog.addFileListener(new FileDialog.FileSelectedListener() {
+            public void fileSelected(File file) {
+                fileName = file.toString();
+                Log.d(getClass().getName(), "selected file " + file.toString());
+                parent.removeView(glSurfaceView);
+                glSurfaceView = new OGLSurfaceView(getApplicationContext(), file.toString());
+                parent.addView(glSurfaceView, viewIndex);
+            }
+        });
+        fileDialog.showDialog();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -143,8 +166,9 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_load_file) {
-
+            ChooseMeshFile();
             return true;
+
         } else if (id == R.id.action_exit) {
             System.exit(0);
         }

@@ -15,8 +15,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import com.project.eti.emusial.a3dmodelsviewer.helpers.SharedParameters;
-import com.project.eti.emusial.a3dmodelsviewer.meshes.CubeMesh;
-import com.project.eti.emusial.a3dmodelsviewer.meshes.TexturedCubeMesh;
+import com.project.eti.emusial.a3dmodelsviewer.meshes.ObjectMesh;
 import com.project.eti.emusial.a3dmodelsviewer.shaders.ShaderProgram;
 
 public class OGLRenderer implements GLSurfaceView.Renderer
@@ -54,20 +53,22 @@ public class OGLRenderer implements GLSurfaceView.Renderer
     protected Context appContext = null;
 
     // Modele obiektów.
-    protected TexturedCubeMesh texturedCubeMesh;
+    //protected TexturedCubeMesh texturedCubeMesh;
+    protected ObjectMesh objectMesh;
 
     // Adresy tekstur w pamięci modułu graficznego.
     protected int textureDataHandle;
     protected int textureIndex;
 
 
-    public OGLRenderer()
+    public OGLRenderer(String file)
     {
         camera = new float[]{0.f, 0.f, 1.5f, // pozycja obserwatora
                              0.f, 0.f, 0.f,  // punkt na który obserwator patrzy
                              0.f, 1.f, 0.f}; // "up vector"
 
-        texturedCubeMesh = new TexturedCubeMesh();
+        Log.d("OGLRenderer", file);
+        objectMesh = new ObjectMesh(file);
     }
 
     @Override
@@ -150,18 +151,8 @@ public class OGLRenderer implements GLSurfaceView.Renderer
         Matrix.translateM(modelMatrix, 0, 0.f, -0.f, -6.5f); // Przesunięcie modelu.
         Matrix.rotateM(modelMatrix, 0, modelMatrix, 0, mObjectAngleX, 0.0f, 1.0f, 0.0f);
         Matrix.rotateM(modelMatrix, 0, modelMatrix, 0, mObjectAngleY, 1.0f, 0.0f, 0.0f);
-        drawShape(texturedCubeMesh.getPositionBuffer(), null, texturedCubeMesh.getNormalBuffer(), texturedCubeMesh.getTexCoordsBuffer(),
-                    texShaders, texturedCubeMesh.getNumberOfVertices());
-
-        /*
-        GLES20.glUseProgram(colShaders.programHandle); // Użycie shaderów korzystających z teksturowania.
-        GLES20.glEnable(GLES20.GL_BLEND);
-        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-        Matrix.translateM(modelMatrix, 0, 4.0f, 2.0f, 0.0f); // Przesunięcie modelu.
-        drawShape(secondCubeMesh.getPositionBuffer(), null, secondCubeMesh.getNormalBuffer(), secondCubeMesh.getTexCoordsBuffer(),
-                colShaders, secondCubeMesh.getNumberOfVertices());
-        GLES20.glDisable(GLES20.GL_BLEND);
-        */
+        drawShape(objectMesh.getPositionBuffer(), null, objectMesh.getNormalBuffer(), objectMesh.getTexCoordsBuffer(),
+                    texShaders, objectMesh.getNumberOfVertices());
 
     }
 

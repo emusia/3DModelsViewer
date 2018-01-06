@@ -24,14 +24,12 @@ public class ParseFile {
     protected static int lastTexIndex = 0;
     protected static int length = 0;
 
-    protected static String mFileName = "TexturedCube.txt";
-    protected static String mPath = "/mnt/sdcard/3DModelViewer/";
     final static String TAG = ParseFile.class.getName();
 
-    public static String ReadFile() {
+    public static String ReadFile(String file) {
         String line = null;
         try {
-            FileInputStream fileInputStream = new FileInputStream(new File(mPath + mFileName));
+            FileInputStream fileInputStream = new FileInputStream(new File(file));
             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             StringBuilder stringBuilder = new StringBuilder();
@@ -140,21 +138,4 @@ public class ParseFile {
         return Float.parseFloat(numberOfVertices);
     }
 
-    public static boolean SaveToFile(String data) {
-        try {
-            File file = new File(mPath + mFileName);
-            if(!file.exists()) {
-                file.createNewFile();
-            }
-            FileOutputStream fileOutputStream = new FileOutputStream(file, true);
-            fileOutputStream.write((data + System.getProperty("line.separator")).getBytes());
-            return true;
-        }
-        catch (FileNotFoundException ex) {
-            Log.d(TAG, ex.getMessage());
-        } catch (IOException ex) {
-            Log.d(TAG, ex.getMessage());
-        }
-        return false;
-    }
 }

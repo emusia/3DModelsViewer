@@ -16,7 +16,7 @@ class OGLSurfaceView extends GLSurfaceView
     private float mPreviousX;
     private float mPreviousY;
 
-    public OGLSurfaceView(Context context)
+    public OGLSurfaceView(Context context, String file)
     {
         super(context);
 
@@ -24,7 +24,8 @@ class OGLSurfaceView extends GLSurfaceView
         setEGLContextClientVersion(2);
 
         // Przypisanie renderera do widoku.
-        renderer = new OGLRenderer();
+        Log.d("OGLSurfaceView", file);
+        renderer = new OGLRenderer(file);
         renderer.setContext(getContext());
         setRenderer(renderer);
     }
