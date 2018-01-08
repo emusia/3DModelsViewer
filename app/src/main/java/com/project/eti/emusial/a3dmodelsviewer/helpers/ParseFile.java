@@ -43,10 +43,6 @@ public class ParseFile {
             Log.d(TAG, ex.getMessage());
         }
 
-        // GetPositionData(line);
-        // GetNormalData(line);
-        // GetNumberOfVertices(line);
-
         return line;
     }
 

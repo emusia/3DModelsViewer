@@ -27,7 +27,6 @@ public class ObjectMesh extends BaseMesh
                 Log.d(getClass().getName(), "selected file " + file.toString());
 
                 String line = ParseFile.ReadFile(fileName);
-                Log.d("OBJECTMESH", line);
 
                 if (line != null) {
                     final float[] positionData =  ParseFile.GetPositionData(line);
